@@ -1,0 +1,20 @@
+# Missing / placeholder images (size < 10 KB)
+
+The following files are still smaller than 10 KB, meaning they were not replaced by a proper image. You can provide your own PNG 600×400 files with these names in `public/images/`.
+
+| File | Expected place |
+|------|----------------|
+| ana-bretana.png | Ana de Bretaña (Reinas de la Allée des Reines) |
+| acteur-grec.png | L’Acteur Grec |
+| beffroi-saint-germain.png | Beffroi de l'Église Saint‑Germain l'Auxerrois |
+| bocca-verita.png | Bocca della Verità |
+| cedric-grolet-opera.png | Cédric Grolet (Ópera) |
+| maria-medici.png | María de Médici (Reinas de la Allée des Reines) |
+| margarita-navarra.png | Margarita de Navarra (Reinas de la Allée des Reines) |
+| luisa-saboya.png | Luisa de Saboya (Reinas de la Allée des Reines) |
+| le-faune-dansant.png | Le Faune Dansant |
+| marchande-masques.png | La Marchande de Masques |
+| santa-genoveva.png | Santa Genoveva |
+| estatua-libertad-luxemburgo.png | Estatua de la Libertad |
+
+Place the appropriate images in `public/images/` and re‑run `npm run update-images` (or the individual scripts) to process them.
