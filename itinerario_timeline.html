@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIMELINE VERTICAL — Itinerario Completo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-orange: #f97316;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-purple: #a855f7;
+      --accent-red: #ef4444;
+      --map-btn-bg: #1e3a8a;
+      --map-btn-hover: #2563eb;
+      --map-btn-text: #60a5fa;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 60px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 16px;
+      text-align: center;
+    }
+
+    h1.main-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    /* Quick Day Nav */
+    .day-nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 0 8px 0;
+      scrollbar-width: none;
+    }
+    .day-nav::-webkit-scrollbar {
+      display: none;
+    }
+    .day-nav-pill {
+      flex: 0 0 auto;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: var(--card-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .day-nav-pill:active, .day-nav-pill:hover {
+      background: var(--card-border);
+      color: #fff;
+    }
+
+    /* Container */
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    /* Day Section */
+    .day-section {
+      margin-bottom: 40px;
+      scroll-margin-top: 110px;
+    }
+
+    .day-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    .day-orange {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(249, 115, 22, 0.05));
+      border: 1px solid rgba(249, 115, 22, 0.4);
+      color: #fdba74;
+    }
+    .day-blue {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: #93c5fd;
+    }
+    .day-green {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+    }
+    .day-purple {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05));
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #c084fc;
+    }
+    .day-red {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    /* Timeline Container */
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+
+    /* Vertical Line */
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      bottom: 10px;
+      width: 3px;
+      background: var(--card-border);
+      border-radius: 2px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Timeline Node Dot */
+    .timeline-node {
+      position: absolute;
+      left: -28px;
+      top: 14px;
+      transform: translateX(-50%);
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--bg-color);
+      border: 3px solid var(--text-muted);
+      z-index: 2;
+    }
+
+    .day-orange .timeline-node { border-color: var(--accent-orange); }
+    .day-blue .timeline-node { border-color: var(--accent-blue); }
+    .day-green .timeline-node { border-color: var(--accent-green); }
+    .day-purple .timeline-node { border-color: var(--accent-purple); }
+    .day-red .timeline-node { border-color: var(--accent-red); }
+
+    /* Time Badge */
+    .time-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #475569;
+      margin-bottom: 8px;
+      letter-spacing: 0.03em;
+    }
+
+    /* Event Content Card */
+    .event-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .event-text {
+      white-space: pre-line;
+      font-size: 0.94rem;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+
+    .event-text ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    /* Styled Maps Link */
+    .maps-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 8px 14px;
+      background: rgba(30, 58, 138, 0.4);
+      border: 1px solid rgba(96, 165, 250, 0.4);
+      border-radius: 10px;
+      color: #93c5fd;
+      text-decoration: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      word-break: break-all;
+      transition: all 0.2s ease;
+    }
+
+    .maps-link:hover, .maps-link:active {
+      background: rgba(37, 99, 235, 0.5);
+      border-color: #60a5fa;
+      color: #ffffff;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 14px 12px;
+      }
+      .timeline {
+        padding-left: 22px;
+      }
+      .timeline::before {
+        left: 7px;
+      }
+      .timeline-node {
+        left: -22px;
+        top: 14px;
+      }
+      .event-card {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 class="main-title">🕒 TIMELINE VERTICAL — Itinerario Completo (Día 24 → Día 2)</h1>
+    <nav class="day-nav">
+      <a href="#dia24" class="day-nav-pill">Día 24</a>
+      <a href="#dia25" class="day-nav-pill">Día 25</a>
+      <a href="#dia26" class="day-nav-pill">Día 26</a>
+      <a href="#dia27" class="day-nav-pill">Día 27</a>
+      <a href="#dia28" class="day-nav-pill">Día 28</a>
+      <a href="#dia29" class="day-nav-pill">Día 29</a>
+      <a href="#dia30" class="day-nav-pill">Día 30</a>
+      <a href="#dia31" class="day-nav-pill">Día 31</a>
+      <a href="#dia1sept" class="day-nav-pill">Día 1 SEPT</a>
+      <a href="#dia2sept" class="day-nav-pill">Día 2 SEPT</a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- DÍA 24 -->
+    <section id="dia24" class="day-section day-orange">
+      <div class="day-header">
+        🟧 DÍA 24 — Iurreta → Burdeos
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">14:00</div>
+          <div class="event-card">
+            <div class="event-text">Iurreta (TopCaravaning)  
+• Recogida AC
+• Revisar depósitos, electricidad, gas
+• Compra básica</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">15:30</div>
+          <div class="event-card">
+            <div class="event-text">Salida hacia Burdeos</div>
+            <a href="https://maps.app.goo.gl/bf6c7kYFvyeN5XFT9" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 Ruta completa: https://maps.app.goo.gl/bf6c7kYFvyeN5XFT9
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">19:00</div>
+          <div class="event-card">
+            <div class="event-text">Llegada a Villenave‑d’Ornon</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">19:30</div>
+          <div class="event-card">
+            <div class="event-text">Cena – The Rooster Guinguette  
+71 Av. Maréchal de Lattre de Tassigny
+• Ambiente guinguette
+• Tabla de quesos, charcutería, magret, vino joven</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">21:30</div>
+          <div class="event-card">
+            <div class="event-text">Pernocta – Parking Église Saint‑Martin  
+• Tranquilo
+• Iluminado
+• Legal para AC</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DÍA 25 -->
+    <section id="dia25" class="day-section day-blue">
+      <div class="day-header">
+        🟦 DÍA 25 — Burdeos → París
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">08:00</div>
+          <div class="event-card">
+            <div class="event-text">Despertar + desayuno</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">08:30</div>
+          <div class="event-card">
+            <div class="event-text">Salida hacia París</div>
+            <a href="https://maps.app.goo.gl/LMDFbV4zfeFfUE1H7" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 Ruta completa: https://maps.app.goo.gl/LMDFbV4zfeFfUE1H7
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">13:00</div>
+          <div class="event-card">
+            <div class="event-text">Parada Sainte-Maure-de-Touraine  
+Comida en AC</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">14:00</div>
+          <div class="event-card">
+            <div class="event-text">Continuación hacia París</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">17:00</div>
+          <div class="event-card">
+            <div class="event-text">Llegada Camping de Paris  
+Check‑in 3 noches</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">18:00</div>
+          <div class="event-card">
+            <div class="event-text">Tarde tranquila</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">21:30</div>
+          <div class="event-card">
+            <div class="event-text">Ducha + descanso</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DÍA 26 -->
+    <section id="dia26" class="day-section day-green">
+      <div class="day-header">
+        🟩 DÍA 26 — París (Crucero + Torre Eiffel + Perfumes + Louvre)
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">08:00</div>
+          <div class="event-card">
+            <div class="event-text">Despertar + mochilas</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">09:00</div>
+          <div class="event-card">
+            <div class="event-text">Bus del Camping → Porte Maillot</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">09:15</div>
+          <div class="event-card">
+            <div class="event-text">Porte Maillot → Charles de Gaulle‑Étoile</div>
+            <a href="https://maps.app.goo.gl/d4C3hrhckwrK3j1p6" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/d4C3hrhckwrK3j1p6
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">09:45</div>
+          <div class="event-card">
+            <div class="event-text">Charles de Gaulle‑Étoile → Bir‑Hakeim</div>
+            <a href="https://maps.app.goo.gl/L6Puwp5RyMM1daBS9" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/L6Puwp5RyMM1daBS9
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">10:10</div>
+          <div class="event-card">
+            <div class="event-text">Llegada a Bir‑Hakeim</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">10:45–12:00</div>
+          <div class="event-card">
+            <div class="event-text">Bir‑Hakeim → Crucero Vedettes de Paris</div>
+            <a href="https://maps.app.goo.gl/1B5UWweiaxJ4Lgm79" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/1B5UWweiaxJ4Lgm79
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">12:20–13:15</div>
+          <div class="event-card">
+            <div class="event-text">Crucero → Estatua de la Libertad (Isla de los Cisnes)</div>
+            <a href="https://maps.app.goo.gl/XLNeCoLak2Mxk9NT8" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/XLNeCoLak2Mxk9NT8
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">13:15–14:00</div>
+          <div class="event-card">
+            <div class="event-text">Estatua de la Libertad → Picnic en Champ de Mars</div>
+            <a href="https://maps.app.goo.gl/9w5BCMuQyCGqqyNS6" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/9w5BCMuQyCGqqyNS6
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">14:15</div>
+          <div class="event-card">
+            <div class="event-text">Picnic → Metro École Militaire</div>
+            <a href="https://maps.app.goo.gl/9E8uQtbQhjfhfCXH6" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/9E8uQtbQhjfhfCXH6
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">14:40</div>
+          <div class="event-card">
+            <div class="event-text">École Militaire → Fragonard Ópera</div>
+            <a href="https://maps.app.goo.gl/KTYFZATuuwsMF4LA9" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/KTYFZATuuwsMF4LA9
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">15:20–16:30</div>
+          <div class="event-card">
+            <div class="event-text">Taller de Perfumes</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">16:45</div>
+          <div class="event-card">
+            <div class="event-text">Fragonard → Cédric Grolet Opéra</div>
+            <a href="https://maps.app.goo.gl/PPVpVhKGQiN25JSF9" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/PPVpVhKGQiN25JSF9
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">18:00</div>
+          <div class="event-card">
+            <div class="event-text">Cédric Grolet → Louvre (Pirámide)</div>
+            <a href="https://maps.app.goo.gl/fKrrafoYvWspucZ79" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/fKrrafoYvWspucZ79
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">18:00–21:00</div>
+          <div class="event-card">
+            <div class="event-text">Louvre nocturno (recorrido optimizado)</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">21:00</div>
+          <div class="event-card">
+            <div class="event-text">Salida del Louvre → Uber/Bolt al camping</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DÍA 27 -->
+    <section id="dia27" class="day-section day-purple">
+      <div class="day-header">
+        🟪 DÍA 27 — París Bonito (ruta exterior fotogénica)
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">09:30</div>
+          <div class="event-card">
+            <div class="event-text">Porte Maillot → Monumento Jacques de Molay</div>
+            <a href="https://maps.app.goo.gl/StKgXK1b6DsVA5UZ6" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/StKgXK1b6DsVA5UZ6
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">10:00</div>
+          <div class="event-card">
+            <div class="event-text">Jacques de Molay → Estatua de Paul Verlaine</div>
+            <a href="https://maps.app.goo.gl/y2JrmwmJszfpyKxj8" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/y2JrmwmJszfpyKxj8
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">10:30–11:15</div>
+          <div class="event-card">
+            <div class="event-text">Plaza de la Concordia</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">11:15–12:00</div>
+          <div class="event-card">
+            <div class="event-text">Jardines de las Tullerías</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">12:30–13:00</div>
+          <div class="event-card">
+            <div class="event-text">Torre de Santiago de Compostela</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">13:00–14:00</div>
+          <div class="event-card">
+            <div class="event-text">Comida cerca del Palais Royal</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">14:00–15:00</div>
+          <div class="event-card">
+            <div class="event-text">Rue Montorgueil / Les Halles</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">15:00–15:30</div>
+          <div class="event-card">
+            <div class="event-text">Pont Neuf → Notre‑Dame</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">15:30–16:00</div>
+          <div class="event-card">
+            <div class="event-text">Notre‑Dame (exterior)</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">16:00–16:30</div>
+          <div class="event-card">
+            <div class="event-text">Barrio Latino → Panteón</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">16:30–18:30</div>
+          <div class="event-card">
+            <div class="event-text">Jardín de Luxemburgo (ruta esculturas)</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">18:30–19:00</div>
+          <div class="event-card">
+            <div class="event-text">Salida por Rue Guynemer → Metro Luxembourg</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DÍA 28 -->
+    <section id="dia28" class="day-section day-orange">
+      <div class="day-header">
+        🟧 DÍA 28 — Camping de Paris → Montévrain → Parking AC Disneyland → Val d’Europe
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">10:00</div>
+          <div class="event-card">
+            <div class="event-text">Camping de Paris → Intermarché Montevrain</div>
+            <a href="https://maps.app.goo.gl/qtxFt8o2Dgn6WMYG8" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/qtxFt8o2Dgn6WMYG8
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">10:45</div>
+          <div class="event-card">
+            <div class="event-text">Intermarché Montevrain
+• Compra
+• Lavandería</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">11:30</div>
+          <div class="event-card">
+            <div class="event-text">Intermarché → Parking AC Disneyland</div>
+            <a href="https://maps.app.goo.gl/JydJi8tm7PC8N3oV8" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/JydJi8tm7PC8N3oV8
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">12:00</div>
+          <div class="event-card">
+            <div class="event-text">Llegada al Parking AC</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">12:15</div>
+          <div class="event-card">
+            <div class="event-text">Parking AC → Val d’Europe (RER A)</div>
+            <a href="https://maps.app.goo.gl/S1Pk41jBpVakMASP7" target="_blank" rel="noopener noreferrer" class="maps-link">
+              👉 https://maps.app.goo.gl/S1Pk41jBpVakMASP7
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">12:30–19:00</div>
+          <div class="event-card">
+            <div class="event-text">Val d’Europe</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">19:00</div>
+          <div class="event-card">
+            <div class="event-text">RER A vuelta</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">21:30</div>
+          <div class="event-card">
+            <div class="event-text">Pernocta AC</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DÍA 29 -->
+    <section id="dia29" class="day-section day-orange">
+      <div class="day-header">
+        🟧 DÍA 29 — Disneyland Park
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">09:00</div>
+          <div class="event-card">
+            <div class="event-text">Entrada al parque  
+• Big Thunder Mountain
+• Peter Pan
+• Phantom Manor
+• Pirates
+• Buzz
+• Hyperspace Mountain</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">13:30</div>
+          <div class="event-card">
+            <div class="event-text">Comida</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">14:30–18:00</div>
+          <div class="event-card">
+            <div class="event-text">Tarde tranquila + desfile</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">22:00</div>
+          <div class="event-card">
+            <div class="event-text">Show nocturno</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">23:00</div>
+          <div class="event-card">
+            <div class="event-text">Pernocta AC</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DÍA 30 -->
+    <section id="dia30" class="day-section day-blue">
+      <div class="day-header">
+        🟦 DÍA 30 — Walt Disney Studios + Disney Village
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">09:30</div>
+          <div class="event-card">
+            <div class="event-text">Entrada Studios  
+• Ratatouille
+• Spider‑Man
+• Avengers
+• Crush
+• Toy Story</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">13:30</div>
+          <div class="event-card">
+            <div class="event-text">Comida</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">15:00–18:00</div>
+          <div class="event-card">
+            <div class="event-text">Shows + zonas nuevas</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">18:00–20:00</div>
+          <div class="event-card">
+            <div class="event-text">Disney Village</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">21:30</div>
+          <div class="event-card">
+            <div class="event-text">Pernocta AC</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DÍA 31 -->
+    <section id="dia31" class="day-section day-green">
+      <div class="day-header">
+        🟩 DÍA 31 — Disneyland Park (segundo día)
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">09:00</div>
+          <div class="event-card">
+            <div class="event-text">Entrada  
+• Repetir favoritas
+• Fotos
+• Compras</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">13:30</div>
+          <div class="event-card">
+            <div class="event-text">Comida</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">Tarde</div>
+          <div class="event-card">
+            <div class="event-text">Fantasyland  
+Adventureland  
+Main Street</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">Noche</div>
+          <div class="event-card">
+            <div class="event-text">Última pernocta AC</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DÍA 1 SEPT -->
+    <section id="dia1sept" class="day-section day-red">
+      <div class="day-header">
+        🟥 DÍA 1 SEPT — Disneyland → Burdeos
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">08:00</div>
+          <div class="event-card">
+            <div class="event-text">Salida  
+Ruta 8h</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">Tarde</div>
+          <div class="event-card">
+            <div class="event-text">Burdeos  
+Pernocta</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DÍA 2 SEPT -->
+    <section id="dia2sept" class="day-section day-red">
+      <div class="day-header">
+        🟥 DÍA 2 SEPT — Burdeos → Iurreta
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">Mañana</div>
+          <div class="event-card">
+            <div class="event-text">Desayuno + paseo</div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-node"></div>
+          <div class="time-badge">Antes 20:00</div>
+          <div class="event-card">
+            <div class="event-text">Devolución AC  
+TopCaravaning Iurreta</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
