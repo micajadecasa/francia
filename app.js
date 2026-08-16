@@ -157,12 +157,12 @@ function renderHome() {
             <p class="section-divider">Selecciona tu experiencia</p>
 
             <div class="category-cards">
-                <div class="category-card" style="background-image: url('images/adulto.png')" onclick="navigateTo('category', {category: 'adulto'})">
+                <div class="category-card" style="background-image: url('public/images/adulto.png')" onclick="navigateTo('category', {category: 'adulto'})">
                     <div class="card-overlay"></div>
                     <h3>Adulto</h3>
                     <p>Descubre la historia profunda</p>
                 </div>
-                <div class="category-card" style="background-image: url('images/juvenil.png')" onclick="navigateTo('category', {category: 'juvenil'})">
+                <div class="category-card" style="background-image: url('public/images/juvenil.png')" onclick="navigateTo('category', {category: 'juvenil'})">
                     <div class="card-overlay"></div>
                     <h3>Juvenil</h3>
                     <p>Una aventura inolvidable</p>
@@ -203,7 +203,7 @@ function renderDay(dayKey) {
     let placesHtml = '';
     
     day.places.forEach((place, index) => {
-        const img = place.images && place.images.length > 0 ? place.images[0] : 'images/placeholder.png';
+        const img = place.images && place.images.length > 0 ? place.images[0] : 'public/images/placeholder.png';
         placesHtml += `
             <div class="place-item" onclick="navigateTo('place', {place: '${place.id}'})">
                 <img src="${img}" class="place-thumb" alt="${place.name}">
@@ -231,7 +231,7 @@ function renderDay(dayKey) {
 function renderPlace(placeId) {
     const day = daysData[currentDay];
     const place = day.places.find(p => p.id === placeId);
-    const img = place.images && place.images.length > 0 ? place.images[0] : 'images/placeholder.png';
+    const img = place.images && place.images.length > 0 ? place.images[0] : 'public/images/placeholder.png';
     const audioSrc = currentCategory === 'adulto' ? place.audioAdulto : place.audioJuvenil;
 
     appContainer.innerHTML = `
