@@ -146,12 +146,12 @@ function renderHome() {
             
             <p class="welcome-subtitle">Intro Adulto</p>
             <div class="home-intro-player">
-                ${renderAudioPlayer('audio/intro-francia.mp3')}
+                ${renderAudioPlayer('public/audio/intro-francia.mp3')}
             </div>
             
             <p class="welcome-subtitle">Intro Juvenil</p>
             <div class="home-intro-player">
-                ${renderAudioPlayer('audio/intro-juvenil-francia.mp3')}
+                ${renderAudioPlayer('public/audio/intro-juvenil-francia.mp3')}
             </div>
             
             <p class="section-divider">Selecciona tu experiencia</p>
