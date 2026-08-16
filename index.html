@@ -1,13 +1,37 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>audioguia-francia</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Francia</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons (via unpkg) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <header class="app-header">
+        <button id="back-btn" class="icon-btn back-btn hidden" aria-label="Atrás">
+            <i class="ph-bold ph-caret-left"></i>
+        </button>
+        <div class="header-content">
+            <div class="french-flag">
+                <div class="stripe blue"></div>
+                <div class="stripe white"></div>
+                <div class="stripe red"></div>
+            </div>
+            <h1>Guía de Francia</h1>
+        </div>
+        <button id="home-btn" class="icon-btn home-btn hidden" aria-label="Inicio">
+            <i class="ph-fill ph-house"></i>
+        </button>
+    </header>
+
+    <div id="app-container" class="page-container">
+        <!-- Views will be dynamically injected here -->
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
 </html>
